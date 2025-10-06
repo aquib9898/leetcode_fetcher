@@ -1,0 +1,8 @@
+<resources>
+    <color name="colorPrimary">#0D69E0</color>
+    <color name="colorPrimaryLight">#5BA8FF</color>
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorBorder">#DADADA</color>
+    <color name="colorOnSurface">#1E1E1E</color>
+    <color name="colorHint">#7C7C7C</color>
+</resources>
