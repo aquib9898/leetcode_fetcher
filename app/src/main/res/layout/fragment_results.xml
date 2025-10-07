@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/colorPrimary"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:id="@+id/results_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingTop="32dp"
+        android:paddingBottom="32dp">
+
+        <ImageView
+            android:id="@+id/img_profile"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@mipmap/ic_launcher_round"
+            android:background="@drawable/circle_profile_bg"
+            android:contentDescription="@string/app_name"
+            android:scaleType="centerCrop"
+            android:clipToOutline="true"
+            android:padding="6dp"
+            android:elevation="4dp" />
+
+        <!-- Username -->
+        <TextView
+            android:id="@+id/tv_username_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User: -"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorSurface"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@drawable/rounded_card_white"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:id="@+id/tv_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Profile: -"
+                android:textSize="16sp"
+                android:textColor="@color/colorOnSurface"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/tv_badges"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Badges: -"
+                android:textSize="16sp"
+                android:textColor="@color/colorOnSurface"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/tv_solved"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Solved: -"
+                android:textSize="16sp"
+                android:textColor="@color/colorOnSurface" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/et_submissions_limit"
+            android:layout_width="220dp"
+            android:layout_height="48dp"
+            android:inputType="number"
+            android:hint="Enter submissions to check"
+            android:gravity="center"
+            android:background="@drawable/rounded_edittext"
+            android:textColor="@color/colorOnSurface"
+            android:hintTextColor="@color/colorHint"
+            android:layout_marginBottom="12dp" />
+
+        <Button
+            android:id="@+id/btn_view_submissions"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="View Submissions"
+            android:backgroundTint="@color/colorSurface"
+            android:textColor="@color/colorPrimary"
+            android:textAllCaps="false"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="8dp" />
+
+    </LinearLayout>
+</ScrollView>
