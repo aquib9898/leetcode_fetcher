@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">task5</string>
+    <string name="navigation_drawer_open">Open navigation</string>
+    <string name="navigation_drawer_close">Close navigation</string>
+    <string name="open_drawer">Open</string>
+    <string name="close_drawer">Close</string>
+
 </resources>

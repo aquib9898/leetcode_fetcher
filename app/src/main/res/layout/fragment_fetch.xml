@@ -1,70 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_fetch_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
-    android:padding="0dp">
+    android:background="@color/colorPrimary">
 
-    <View
-        android:id="@+id/topAccent"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_top"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.9" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_start"
         android:layout_width="0dp"
-        android:layout_height="160dp"
-        android:layout_marginStart="-80dp"
-        android:layout_marginEnd="-80dp"
-        android:background="@drawable/top_accent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.1" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_end"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.9" />
 
     <TextView
         android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Leetcode fetcher"
-        android:textSize="28sp"
-        android:textStyle="bold"
+        android:text="Leetcode Fetcher"
         android:textColor="@color/colorSurface"
-        android:gravity="center"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintTop_margin="56dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:textStyle="bold"
+        android:textSize="24sp"
+        app:layout_constraintTop_toBottomOf="@id/guide_top"
+        app:layout_constraintStart_toStartOf="@id/guide_start"
+        app:layout_constraintEnd_toEndOf="@id/guide_end"
+        android:gravity="center" />
 
     <EditText
-        android:id="@+id/et_username"
+        android:id="@+id/editTextText"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:ems="10"
-        android:inputType="text"
         android:hint="Enter username"
+        android:inputType="text"
         android:textColor="@color/colorOnSurface"
-        android:hintTextColor="@color/colorHint"
         android:background="@drawable/rounded_edittext"
-        android:importantForAutofill="no"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="60dp"
         app:layout_constraintTop_toBottomOf="@id/title"
-        app:layout_constraintWidth_percent="0.85"
-        android:layout_marginTop="100dp" />
+        app:layout_constraintStart_toStartOf="@id/guide_start"
+        app:layout_constraintEnd_toEndOf="@id/guide_end" />
 
     <Button
-        android:id="@+id/btn_fetch"
+        android:id="@+id/continueButton"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:text="Fetch"
         android:textAllCaps="false"
         android:backgroundTint="@color/colorSurface"
         android:textColor="@color/colorPrimary"
-        android:padding="8dp"
-        android:layout_marginTop="18dp"
-        app:layout_constraintTop_toBottomOf="@id/et_username"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_percent="0.5"
-        app:layout_constraintHorizontal_bias="0.5" />
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@id/editTextText"
+        app:layout_constraintStart_toStartOf="@id/guide_start"
+        app:layout_constraintEnd_toEndOf="@id/guide_end"
+        app:layout_constraintBottom_toBottomOf="@id/guide_bottom"
+        app:layout_constraintVertical_bias="0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
