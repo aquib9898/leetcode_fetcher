@@ -6,12 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class SubmissionsFragment : Fragment() {
 
@@ -38,8 +36,8 @@ class SubmissionsFragment : Fragment() {
     private lateinit var adapter: SubmissionsAdapter
     private lateinit var tvEmpty: TextView
 
-    private var wrappedCall: Call<SubmissionsResponse>? = null
     private val gson = Gson()
+    private lateinit var viewModel: SharedDataViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,11 +46,7 @@ class SubmissionsFragment : Fragment() {
         if (limit <= 0) limit = 5
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_submissions, container, false)
     }
 
@@ -65,6 +59,8 @@ class SubmissionsFragment : Fragment() {
 
         tvEmpty.text = "Loading submissions..."
         tvEmpty.visibility = View.VISIBLE
+
+        viewModel = ViewModelProvider(requireActivity()).get(SharedDataViewModel::class.java)
 
         val recentJson = arguments?.getString(ARG_RECENT_JSON)
         if (!recentJson.isNullOrBlank()) {
@@ -87,49 +83,18 @@ class SubmissionsFragment : Fragment() {
                     showEmpty("No submissions found")
                     return
                 }
-            } catch (e: Exception) { }
+            } catch (e: Exception) {}
         }
 
-        fetchSubmissions()
-    }
+        viewModel.submissions.observe(viewLifecycleOwner) { list ->
+            if (list.isNullOrEmpty()) showEmpty("No submissions found") else showList(list)
+        }
 
-    private fun fetchSubmissions() {
-        wrappedCall = RetrofitClient.apiService.getSubmissionsWrapped(username, limit)
-        wrappedCall?.enqueue(object : Callback<SubmissionsResponse> {
-            override fun onResponse(
-                call: Call<SubmissionsResponse>,
-                response: Response<SubmissionsResponse>
-            ) {
-                if (!isAdded) return
-
-                if (response.isSuccessful && response.body() != null) {
-                    val body = response.body()!!
-                    val list = body.submission?.map {
-                        Submission(
-                            id = null,
-                            title = it.title,
-                            status = it.statusDisplay ?: it.status ?: "-",
-                            lang = it.lang,
-                            timestamp = it.timestamp?.toLongOrNull()
-                        )
-                    } ?: emptyList()
-
-                    val limited = list.take(limit)
-                    if (limited.isNotEmpty()) {
-                        showList(limited)
-                    } else {
-                        showEmpty("No submissions found")
-                    }
-                } else {
-                    showEmpty("No submissions found")
-                }
-            }
-
-            override fun onFailure(call: Call<SubmissionsResponse>, t: Throwable) {
-                if (!isAdded) return
-                showEmpty("Network error: ${t.message}")
-            }
-        })
+        if (username.isNotBlank()) {
+            viewModel.loadSubmissionsWrapped(username, limit)
+        } else {
+            showEmpty("Invalid username")
+        }
     }
 
     private fun showList(list: List<Submission>) {
@@ -141,10 +106,5 @@ class SubmissionsFragment : Fragment() {
         adapter.submitList(emptyList())
         tvEmpty.text = message
         tvEmpty.visibility = View.VISIBLE
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        wrappedCall?.cancel()
     }
 }

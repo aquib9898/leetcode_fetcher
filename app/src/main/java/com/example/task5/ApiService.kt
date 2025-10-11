@@ -7,7 +7,7 @@ import retrofit2.http.Query
 
 interface ApiService {
 
-    @GET("userProfile/{username}")
+    @GET("{username}")
     fun getUserProfile(@Path("username") username: String): Call<UserProfileResponse>
 
     @GET("{username}/badges")
