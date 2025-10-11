@@ -56,12 +56,31 @@ class ResultsFragment : Fragment() {
         tvUsernameTitle = view.findViewById(R.id.tv_username_title)
 
         viewModel = ViewModelProvider(requireActivity()).get(SharedDataViewModel::class.java)
+
+        val lastUsername = viewModel.getLastUsername()
+        if (username.isBlank() && !lastUsername.isNullOrBlank()) username = lastUsername ?: ""
+
+        if (username.isBlank()) {
+            tvProfile.text = "No user selected"
+            return
+        }
+
         tvUsernameTitle.text = "User: $username"
+
+        viewModel.profileLoading.observe(viewLifecycleOwner) { loading ->
+            if (loading) {
+                tvProfile.text = "Profile: loading..."
+            }
+        }
 
         viewModel.profile.observe(viewLifecycleOwner) { profileResp ->
             if (profileResp == null) {
-                tvProfile.text = "Profile: error or not available"
-                imgProfile.setImageResource(R.mipmap.ic_launcher_round)
+                if (viewModel.profileLoading.value == true) {
+                    tvProfile.text = "Profile: loading..."
+                } else {
+                    tvProfile.text = "Profile: error or not available"
+                    imgProfile.setImageResource(R.mipmap.ic_launcher_round)
+                }
             } else {
                 tvProfile.text = buildString {
                     append("Profile:\n")
@@ -69,7 +88,6 @@ class ResultsFragment : Fragment() {
                     append("\nRank: ${profileResp.ranking ?: "-"}\n")
                     append(profileResp.contributionPoint?.let { "Contribution: $it\n" } ?: "")
                 }
-
                 val avatarCandidate = profileResp.avatar ?: profileResp.profileImage ?: profileResp.avatarUrl
                 val avatarNormalized = normalizeUrl(avatarCandidate)
                 if (!avatarNormalized.isNullOrBlank()) {
@@ -88,6 +106,11 @@ class ResultsFragment : Fragment() {
                     imgProfile.setImageResource(R.mipmap.ic_launcher_round)
                 }
             }
+            updateSolvedDisplay()
+        }
+
+        viewModel.solved.observe(viewLifecycleOwner) {
+            updateSolvedDisplay()
         }
 
         viewModel.badges.observe(viewLifecycleOwner) { badgesResp ->
@@ -98,23 +121,6 @@ class ResultsFragment : Fragment() {
                 val names = if (items.isEmpty()) listOf("-") else items.mapNotNull { it.displayName }
                 tvBadges.text = "Badges:\n" + names.joinToString(", ")
             }
-        }
-
-        viewModel.solved.observe(viewLifecycleOwner) { solvedResp ->
-            if (solvedResp == null) {
-                tvSolved.text = "Solved: -"
-            } else {
-                val easy = solvedResp.easySolved ?: 0
-                val medium = solvedResp.mediumSolved ?: 0
-                val hard = solvedResp.hardSolved ?: 0
-                val total = solvedResp.totalSolved ?: (easy + medium + hard)
-                tvSolved.text = "Solved:\nTotal: $total\nEasy: $easy  Medium: $medium  Hard: $hard"
-            }
-        }
-
-        if (username.isBlank()) {
-            Toast.makeText(requireContext(), "Invalid username", Toast.LENGTH_SHORT).show()
-            return
         }
 
         viewModel.loadProfile(username)
@@ -132,6 +138,41 @@ class ResultsFragment : Fragment() {
         }
     }
 
+    private fun updateSolvedDisplay() {
+        val profileResp = viewModel.profile.value
+        val solvedResp = viewModel.solved.value
+
+        val easy = when {
+            profileResp?.easySolved != null -> profileResp.easySolved!!
+            solvedResp?.easySolved != null -> solvedResp.easySolved!!
+            else -> 0
+        }
+        val medium = when {
+            profileResp?.mediumSolved != null -> profileResp.mediumSolved!!
+            solvedResp?.mediumSolved != null -> solvedResp.mediumSolved!!
+            else -> 0
+        }
+        val hard = when {
+            profileResp?.hardSolved != null -> profileResp.hardSolved!!
+            solvedResp?.hardSolved != null -> solvedResp.hardSolved!!
+            else -> 0
+        }
+        val total = when {
+            profileResp?.totalSolved != null -> profileResp.totalSolved!!
+            solvedResp?.solvedProblem != null -> solvedResp.solvedProblem!!
+            solvedResp?.acSubmissionNum?.find { it.difficulty.equals("All", true) }?.count != null -> solvedResp.acSubmissionNum.find { it.difficulty.equals("All", true) }!!.count!!
+            (solvedResp?.acSubmissionNum?.find { it.difficulty.equals("Easy", true) }?.count != null &&
+                    solvedResp.acSubmissionNum.find { it.difficulty.equals("Medium", true) }?.count != null &&
+                    solvedResp.acSubmissionNum.find { it.difficulty.equals("Hard", true) }?.count != null) ->
+                (solvedResp.acSubmissionNum.find { it.difficulty.equals("Easy", true) }!!.count!!
+                        + solvedResp.acSubmissionNum.find { it.difficulty.equals("Medium", true) }!!.count!!
+                        + solvedResp.acSubmissionNum.find { it.difficulty.equals("Hard", true) }!!.count!!)
+            else -> (easy + medium + hard)
+        }
+
+        tvSolved.text = "Solved:\nTotal: $total\nEasy: $easy  Medium: $medium  Hard: $hard"
+    }
+
     private fun normalizeUrl(raw: String?): String? {
         if (raw.isNullOrBlank()) return null
         val t = raw.trim()
@@ -143,5 +184,3 @@ class ResultsFragment : Fragment() {
         }
     }
 }
-
-
